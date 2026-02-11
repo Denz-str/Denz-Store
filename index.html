@@ -3,125 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Denz Store</title>
+<title>DENZ STORE</title>
 
 <style>
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:linear-gradient(180deg,#000,#0d1b2a);
-    color:white;
-    overflow-x:hidden;
-}
-
-header{
-    text-align:center;
-    padding:20px;
-    background:#000814;
-    border-bottom:2px solid #1e90ff;
-    font-size:22px;
-    font-weight:bold;
-}
-
-.container{
-    padding:20px;
-    opacity:0.4; /* bikin web kelihatan non aktif */
-    pointer-events:none; /* disable klik semua */
-}
-
-.title{
-    color:#1e90ff;
-    font-size:24px;
-    margin-bottom:15px;
-}
-
-.game-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-}
-
-.game-card{
-    background:#111827;
-    padding:30px 10px;
-    text-align:center;
-    border-radius:12px;
-    font-weight:bold;
-}
-
-.topup-section{
-    margin-top:25px;
-    background:#000814;
-    padding:20px;
-    border-radius:15px;
-}
-
-input, select, button{
-    width:100%;
-    padding:10px;
-    margin-top:8px;
-    border-radius:8px;
-    border:none;
-}
-
-button{
-    background:#1e90ff;
-    color:white;
-    font-weight:bold;
-}
-
-/* GARIS POLISI */
-.police-line{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    z-index:999;
-    pointer-events:none;
-}
-
-.police-tape{
-    position:absolute;
-    width:150%;
-    padding:15px 0;
-    background:repeating-linear-gradient(
-        45deg,
-        yellow,
-        yellow 20px,
-        black 20px,
-        black 40px
-    );
-    color:black;
-    font-weight:bold;
-    text-align:center;
-    font-size:18px;
-    transform:rotate(-20deg);
-    box-shadow:0 0 20px yellow;
-}
-
-.police-tape span{
-    background:black;
-    color:yellow;
-    padding:5px 10px;
-}
-
-.police-text{
-    position:relative;
-    z-index:1000;
-    font-size:22px;
-    font-weight:bold;
-    background:black;
-    padding:15px 25px;
-    border-radius:10px;
-    border:2px solid yellow;
-    text-align:center;
-}
-
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,#000,#0d1b2a);color:white;}
+header{text-align:center;padding:20px;background:#000814;border-bottom:2px solid #1e90ff;font-size:22px;font-weight:bold;}
+.container{padding:20px;}
+.title{color:#1e90ff;font-size:24px;margin-bottom:15px;}
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.game-card{background:#111827;padding:30px 10px;text-align:center;border-radius:12px;cursor:pointer;transition:0.3s;border:2px solid transparent;font-weight:bold;}
+.game-card:hover{border:2px solid #1e90ff;box-shadow:0 0 15px #1e90ff;transform:scale(1.05);}
+.topup-section{display:none;margin-top:25px;background:#000814;padding:20px;border-radius:15px;}
+input,select{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:none;}
+.nominal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.nominal-btn{background:#111827;padding:12px;text-align:center;border-radius:8px;cursor:pointer;border:2px solid transparent;}
+.nominal-btn:hover{border:2px solid #1e90ff;}
+.nominal-active{border:2px solid #1e90ff;background:#1e90ff;}
+button{width:100%;padding:12px;margin-top:15px;background:#1e90ff;border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;}
+button:hover{background:#3aa0ff;}
 </style>
 </head>
 
@@ -130,50 +29,200 @@ button{
 <header>🎮 DENZ STORE</header>
 
 <div class="container">
-
 <div class="title">PILIH GAME</div>
 
 <div class="game-grid">
-<div class="game-card">FREE FIRE</div>
-<div class="game-card">MOBILE LEGENDS</div>
+  <div class="game-card" onclick="pilihGame('Free Fire')">FREE FIRE</div>
+  <div class="game-card" onclick="pilihGame('Mobile Legends')">MOBILE LEGENDS</div>
+  <div class="game-card" onclick="pilihGame('PUBG')">PUBG</div>
+  <div class="game-card" onclick="pilihGame('Efooball')">EFOOBALL</div>
 </div>
 
-<div class="topup-section">
+<div class="topup-section" id="formTopup">
+<h3 id="namaGame"></h3>
+
 <label>ID Game:</label>
-<input type="text" placeholder="Masukkan ID">
+<input type="text" id="idgame" placeholder="Masukkan ID">
+
+<label>Kode Promo (Opsional):</label>
+<input type="text" id="kodePromo" placeholder="Masukkan kode promo">
 
 <label>Pilih Nominal:</label>
-<select>
-<option>10.000</option>
-<option>20.000</option>
-<option>50.000</option>
-<option>100.000</option>
-</select>
+<div class="nominal-grid" id="diamondList"></div>
 
 <label>Metode Pembayaran:</label>
-<select>
-<option>Dana</option>
-<option>OVO</option>
-<option>GoPay</option>
-<option>Transfer Bank</option>
+<select id="pembayaran" onchange="updateHarga()">
+  <option value="">-- Pilih Pembayaran --</option>
+  <optgroup label="E-wallet">
+    <option value="Dana">Dana</option>
+    <option value="OVO">OVO</option>
+    <option value="GoPay">GoPay</option>
+  </optgroup>
+  <optgroup label="Pulsa">
+    <option value="Pulsa Indosat">Pulsa Indosat</option>
+  </optgroup>
+  <optgroup label="Toko Serbaguna">
+    <option value="Alfamart">Alfamart</option>
+    <option value="Indomaret">Indomaret</option>
+  </optgroup>
 </select>
 
-<button>Top Up Sekarang</button>
+<h3>Total: <span id="totalHarga">0</span></h3>
 
+<button onclick="kirimWA()">Top Up Sekarang</button>
 </div>
-</div>
-
-<!-- GARIS POLISI OVERLAY -->
-<div class="police-line">
-<div class="police-tape">
-<span>⚠️ SEDANG TAHAP PENGEMBANGAN ⚠️</span>
 </div>
 
-<div class="police-text">
-⚠️ sedang tahap pengembangan<br>
-Top Up Belum Tersedia
-</div>
-</div>
+<script>
+let selectedDiamond = "";
+let hargaRupiah = 0;
+let gameDipilih = "";
+
+// Kode promo contoh: "FREE5" = diskon Rp5000, "ML10" = diskon 10%
+let kodePromoAktif = {
+  "FREE5": 5000,
+  "ML10": 10
+};
+
+const data = {
+  "Free Fire":[
+    {dm:"5 💎", harga:900},
+    {dm:"12 💎", harga:2500},
+    {dm:"50 💎", harga:7000},
+    {dm:"70 💎", harga:11000},
+    {dm:"140 💎", harga:18000},
+    {dm:"355 💎", harga:47000},
+    {dm:"720 💎", harga:94000},
+    {dm:"1050 💎", harga:137000},
+    {dm:"Membership Bulanan", harga:84000},
+    {dm:"Membership Mingguan", harga:28500}
+  ],
+  "Mobile Legends":[
+    {dm:"12 💎", harga:3000},
+    {dm:"14 💎", harga:4000},
+    {dm:"36 💎", harga:10500},
+    {dm:"71 💎", harga:18500},
+    {dm:"148 💎", harga:44000},
+    {dm:"215 💎 + 25 Bonus", harga:62000},
+    {dm:"408 💎", harga:110000},
+    {dm:"1045 💎", harga:280000}
+  ],
+  "PUBG":[
+    {dm:"60 UC", harga:16000},
+    {dm:"240 UC", harga:62000},
+    {dm:"300 UC", harga:76000},
+    {dm:"600 UC", harga:156000},
+    {dm:"720 UC", harga:185000},
+    {dm:"1080 UC", harga:280000}
+  ],
+  "Efooball":[
+    {dm:"130 Coins 🪙", harga:21000},
+    {dm:"550 Coins 🪙", harga:83500},
+    {dm:"750 Coins 🪙", harga:111570},
+    {dm:"1040 Coins 🪙", harga:155000},
+    {dm:"2130 Coins 🪙", harga:309000}
+  ]
+};
+
+function pilihGame(game){
+  gameDipilih = game;
+  document.getElementById("formTopup").style.display="block";
+  document.getElementById("namaGame").innerText="Top Up "+game;
+  renderDiamond();
+}
+
+function renderDiamond(){
+  let box = document.getElementById("diamondList");
+  box.innerHTML="";
+  selectedDiamond="";
+  hargaRupiah=0;
+  document.getElementById("totalHarga").innerText="0";
+
+  data[gameDipilih].forEach(d=>{
+    let div=document.createElement("div");
+    div.className="nominal-btn";
+    div.innerHTML=d.dm+"<br>Rp "+d.harga;
+    div.onclick=function(){ pilihDiamond(d.dm,d.harga,this); }
+    box.appendChild(div);
+  });
+}
+
+function pilihDiamond(dm,harga,el){
+  selectedDiamond=dm;
+  hargaRupiah=harga;
+  document.querySelectorAll(".nominal-btn").forEach(b=>b.classList.remove("nominal-active"));
+  el.classList.add("nominal-active");
+  
+  // update harga sesuai opsi pembayaran & diskon
+  updateHarga();
+}
+
+function updateHarga(){
+  let pembayaran = document.getElementById("pembayaran").value;
+  let total = hargaRupiah;
+
+  // Sistem lama Pulsa
+  if(pembayaran === "Pulsa Indosat"){
+    if(hargaRupiah <= 50000){ 
+      total = hargaRupiah + 2000; 
+    } else { 
+      total = hargaRupiah + 6000; 
+    }
+  }
+
+  // Total asli dulu
+  let totalDisplay = total;
+
+  // Cek diskon
+  let kode = document.getElementById("kodePromo").value.trim();
+  if(kodePromoAktif[kode]){
+    let diskon = 0;
+    if(kodePromoAktif[kode] < 100){ // diskon persen
+      diskon = Math.round(total * kodePromoAktif[kode]/100);
+    } else { // diskon nominal
+      diskon = kodePromoAktif[kode];
+    }
+
+    let hargaAkhir = total - diskon;
+    if(hargaAkhir < 0) hargaAkhir = 0; // jaga supaya gak negatif
+
+    // Tampilkan format: harga asli + diskon = harga akhir
+    totalDisplay = total + " - Diskon " + (kodePromoAktif[kode]<100 ? kodePromoAktif[kode]+"%" : "Rp "+diskon) + " = " + hargaAkhir;
+  }
+
+  document.getElementById("totalHarga").innerText = totalDisplay;
+}
+
+function kirimWA(){
+  let id=document.getElementById("idgame").value.trim();
+  let pembayaran=document.getElementById("pembayaran").value;
+  let kode = document.getElementById("kodePromo").value.trim();
+
+  if(id==="" || selectedDiamond==="" || pembayaran==="" || gameDipilih===""){
+    alert("Lengkapi semua data terlebih dahulu!");
+    return;
+  }
+
+  let totalHarga = document.getElementById("totalHarga").innerText;
+
+  let pesan=
+  "Halo Denz Store,%0A%0A"+
+  "Game: "+gameDipilih+"%0A"+
+  "ID: "+id+"%0A"+
+  "Nominal: "+selectedDiamond+"%0A"+
+  "Harga: Rp "+totalHarga+"%0A"+
+  "Pembayaran: "+pembayaran;
+
+  // Tambah kode promo di WA kalau valid
+  if(kodePromoAktif[kode]){
+    pesan += "%0AKode Promo: "+kode;
+  }
+
+  pesan += "%0A%0ATolong diproses ya 🙏";
+
+  window.open("https://wa.me/6285649107941?text="+pesan);
+}
+</script>
 
 </body>
-  </html>
+    </html>
